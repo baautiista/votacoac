@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "modules": {
+    "predictions": true,
+    "support": true,
+    "traffic": true,
+    "comparison": true,
+    "evolution": true,
+    "bingo": true,
+    "league": true,
+    "fantasy": true
+  },
+  "forecasts": {
+    "semifinales": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": null,
+      "limits": {
+        "Coro": 6,
+        "Comparsa": 8,
+        "Chirigota": 8,
+        "Cuarteto": 3
+      }
+    },
+    "final": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": null,
+      "limits": {
+        "Coro": 4,
+        "Comparsa": 4,
+        "Chirigota": 4,
+        "Cuarteto": 4
+      }
+    },
+    "ganador": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": null,
+      "limits": {
+        "Coro": 1,
+        "Comparsa": 1,
+        "Chirigota": 1,
+        "Cuarteto": 1
+      }
+    }
+  },
+  "points": {
+    "semifinales": 30,
+    "final": 60,
+    "ganador": 150,
+    "exactPosition": 100
+  },
+  "support": {
+    "open": true,
+    "opensAt": null,
+    "closesAt": null
+  },
+  "traffic": {
+    "minVotes": 5,
+    "excellent": 80,
+    "good": 60,
+    "regular": 40
+  },
+  "bingo": {
+    "open": true,
+    "opensAt": null,
+    "closesAt": null,
+    "competitive": true,
+    "situations": [
+      {
+        "id": "bingo-01",
+        "text": "El público pide otra"
+      },
+      {
+        "id": "bingo-02",
+        "text": "Gran ovación a una agrupación"
+      },
+      {
+        "id": "bingo-03",
+        "text": "Se menciona a un autor en una letra"
+      },
+      {
+        "id": "bingo-04",
+        "text": "Una referencia a Cádiz"
+      },
+      {
+        "id": "bingo-05",
+        "text": "Una letra sobre actualidad política"
+      },
+      {
+        "id": "bingo-06",
+        "text": "Los aplausos interrumpen una letra"
+      },
+      {
+        "id": "bingo-07",
+        "text": "Se menciona al Gran Teatro Falla"
+      },
+      {
+        "id": "bingo-08",
+        "text": "Un juego de palabras inesperado"
+      },
+      {
+        "id": "bingo-09",
+        "text": "Suena un piropo a la ciudad"
+      },
+      {
+        "id": "bingo-10",
+        "text": "Una referencia al mar"
+      },
+      {
+        "id": "bingo-11",
+        "text": "Una letra dedicada a la familia"
+      },
+      {
+        "id": "bingo-12",
+        "text": "El público acompaña un estribillo"
+      },
+      {
+        "id": "bingo-13",
+        "text": "Una pausa dramática"
+      },
+      {
+        "id": "bingo-14",
+        "text": "Una referencia a La Caleta"
+      },
+      {
+        "id": "bingo-15",
+        "text": "Aparece un personaje histórico"
+      },
+      {
+        "id": "bingo-16",
+        "text": "Una sorpresa en el popurrí"
+      },
+      {
+        "id": "bingo-17",
+        "text": "Una letra sobre la amistad"
+      },
+      {
+        "id": "bingo-18",
+        "text": "Una referencia a la cantera"
+      },
+      {
+        "id": "bingo-19",
+        "text": "Una rima provoca carcajadas"
+      },
+      {
+        "id": "bingo-20",
+        "text": "Se recuerda a un carnavalero"
+      },
+      {
+        "id": "bingo-21",
+        "text": "Se habla del barrio"
+      },
+      {
+        "id": "bingo-22",
+        "text": "Una broma sobre el propio concurso"
+      },
+      {
+        "id": "bingo-23",
+        "text": "Una referencia a la gastronomía"
+      },
+      {
+        "id": "bingo-24",
+        "text": "Un cambio de tono inesperado"
+      },
+      {
+        "id": "bingo-25",
+        "text": "Una mención al levante"
+      },
+      {
+        "id": "bingo-26",
+        "text": "Un remate provoca aplausos"
+      },
+      {
+        "id": "bingo-27",
+        "text": "Una referencia al trabajo"
+      },
+      {
+        "id": "bingo-28",
+        "text": "Se canta sobre los sueños"
+      },
+      {
+        "id": "bingo-29",
+        "text": "Una letra pide igualdad"
+      },
+      {
+        "id": "bingo-30",
+        "text": "Una mención a febrero"
+      },
+      {
+        "id": "bingo-31",
+        "text": "Una referencia al amor"
+      },
+      {
+        "id": "bingo-32",
+        "text": "Una despedida emocionada"
+      }
+    ]
+  },
+  "fantasy": {
+    "enabled": false,
+    "publicUrl": "",
+    "budget": 100,
+    "roster": {
+      "Comparsa": 3,
+      "Chirigota": 3,
+      "Coro": 1,
+      "Cuarteto": 1
+    },
+    "prices": {}
+  },
+  "phaseOrder": [
+    "preliminares",
+    "cuartos",
+    "semifinales",
+    "final"
+  ]
+}

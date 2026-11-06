@@ -1,0 +1,10 @@
+/node_modules/
+/.next/
+/out/
+/dist/
+/.openai/artifacts/
+*.tsbuildinfo
+.env*
+!.env.example
+npm-debug.log*
+.DS_Store

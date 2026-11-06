@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1794000285568,
+      "tag": "0000_pink_marvel_apes",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794003254889,
+      "tag": "0001_solid_newton_destine",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794005297505,
+      "tag": "0002_dazzling_songbird",
+      "breakpoints": true
+    }
+  ]
+}

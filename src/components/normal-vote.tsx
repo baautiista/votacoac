@@ -1,0 +1,9 @@
+'use client';
+import {useState} from 'react';
+import {ArrowUpRight,Star} from 'lucide-react';
+import {Slider} from './ui/slider';
+import {AlertDialog,AlertDialogTrigger,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from './ui/alert-dialog';
+export function NormalVote({onVoteSuccess,disabled,canSubmit=true}:{onVoteSuccess:(score:number)=>void;disabled?:boolean;canSubmit?:boolean}){
+ const [score,setScore]=useState(5);
+ return <div className="pt-4"><div className="flex flex-col items-center rounded-[22px] bg-[#FCE4EF] p-6"><Star className="h-6 w-6 text-raspberry"/><strong className="mt-3 font-headline text-[80px] font-bold leading-none text-raspberry">{score}<span className="ml-1 text-3xl text-raspberry/35">/10</span></strong><div className="mt-7 flex w-full items-center gap-4 text-xs"><span>1</span><Slider aria-label="Puntuación del tipo" value={[score]} min={1} max={10} step={1} onValueChange={v=>setScore(v[0])} disabled={disabled}/><span>10</span></div></div><AlertDialog><AlertDialogTrigger asChild><button className="action-button action-navy mt-5 w-full disabled:opacity-40" disabled={disabled || !canSubmit}>{disabled?'Guardando tu voto…':canSubmit ? 'Enviar puntuación' : 'Envío no disponible'}<ArrowUpRight size={17}/></button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle className="text-xl font-bold">Confirmar puntuación</AlertDialogTitle><AlertDialogDescription>Vas a puntuar este tipo con un {score} sobre 10. Una vez guardado, no podrás cambiarlo.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={disabled} onClick={()=>onVoteSuccess(score)}>Confirmar</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div>;
+}

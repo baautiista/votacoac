@@ -1,0 +1,143 @@
+{
+  "edition": {
+    "id": "coac-2027-demo",
+    "name": "COAC 2027",
+    "demo": true,
+    "notice": "Agrupaciones y programación ficticias para probar VotaCOAC.",
+    "votingOpen": true
+  },
+  "groups": [
+    {
+      "id": "demo-brujula",
+      "name": "La brújula del sur",
+      "category": "Comparsa",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Una comparsa imaginaria inspirada en los viajes y la bahía."
+    },
+    {
+      "id": "demo-cola",
+      "name": "Los últimos de la cola",
+      "category": "Chirigota",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Una chirigota ficticia sobre las pequeñas esperas de cada día."
+    },
+    {
+      "id": "demo-marea",
+      "name": "La marea canta",
+      "category": "Coro",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Un coro de demostración con el mar como escenario."
+    },
+    {
+      "id": "demo-ensayo",
+      "name": "Esto era un ensayo",
+      "category": "Cuarteto",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Un cuarteto de ejemplo que convierte el ensayo en parodia."
+    },
+    {
+      "id": "demo-papel",
+      "name": "Ciudad de papel",
+      "category": "Comparsa",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Una comparsa ficticia sobre las historias de una ciudad."
+    },
+    {
+      "id": "demo-manana",
+      "name": "Los que empiezan mañana",
+      "category": "Chirigota",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Una chirigota de demostración sobre los propósitos pendientes."
+    },
+    {
+      "id": "demo-miradores",
+      "name": "Los miradores de la bahía",
+      "category": "Coro",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Un coro imaginario dedicado a los balcones que miran al mar."
+    },
+    {
+      "id": "demo-papeles",
+      "name": "Aquí faltan papeles",
+      "category": "Cuarteto",
+      "author": "Autoría de ejemplo",
+      "imageUrl": "",
+      "imageHint": "",
+      "description": "Un cuarteto ficticio sobre una oficina de trámites imposibles."
+    }
+  ],
+  "sessions": [
+    {
+      "id": "demo-sesion-1",
+      "name": "Sesión de ejemplo 1",
+      "location": "Gran Teatro Falla",
+      "date": "Programación de demostración",
+      "time": "20:00 h",
+      "performances": [
+        {
+          "id": "demo-p1",
+          "groupId": "demo-marea",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p2",
+          "groupId": "demo-brujula",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p3",
+          "groupId": "demo-cola",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p4",
+          "groupId": "demo-ensayo",
+          "actTime": "2020-01-01T19:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "demo-sesion-2",
+      "name": "Sesión de ejemplo 2",
+      "location": "Gran Teatro Falla",
+      "date": "Programación de demostración",
+      "time": "20:00 h",
+      "performances": [
+        {
+          "id": "demo-p5",
+          "groupId": "demo-miradores",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p6",
+          "groupId": "demo-papel",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p7",
+          "groupId": "demo-manana",
+          "actTime": "2020-01-01T19:00:00Z"
+        },
+        {
+          "id": "demo-p8",
+          "groupId": "demo-papeles",
+          "actTime": "2020-01-01T19:00:00Z"
+        }
+      ]
+    }
+  ]
+}

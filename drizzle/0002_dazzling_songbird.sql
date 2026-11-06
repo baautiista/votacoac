@@ -1,0 +1,2 @@
+CREATE INDEX `votes_edition_performance_idx` ON `votes` (`edition_id`,`performance_id`);--> statement-breakpoint
+CREATE INDEX `votes_edition_category_type_idx` ON `votes` (`edition_id`,`category`,`voting_type`);

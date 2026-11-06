@@ -1,0 +1,16 @@
+PROYECTO VOTACOAC 2027 · ENTREGA PARA CLAUDE
+
+Esta carpeta contiene el código completo de la versión publicada de VotaCOAC.
+Web actual: https://votacoac.miguelbaulim.chatgpt.site
+
+Objetivo de la siguiente tarea: mejorar solo el diseño, conservando funcionalidades, autenticación, APIs y base de datos. Reutilizar Next.js/React, Tailwind y Framer Motion. Azul principal #3B84FA; tarjetas de agrupaciones cuadradas y SOLO TEXTO. No añadir Firebase.
+
+Para gastar menos tokens en Claude Code, empieza inspeccionando src/app/globals.css, src/app/page.tsx, src/components/page-header.tsx, src/components/group-card.tsx y tailwind.config.ts. Lee los demás componentes cuando hagan falta. No cargues package-lock.json, catálogos ni pruebas completas para una tarea exclusivamente visual.
+
+Node.js 24. Instalación: npm ci. Interfaz local: npm run dev. Comprobaciones: npm run typecheck, npm run test:server, npm run build.
+
+Las rutas /api/ pertenecen al Worker de server/. El servidor usa Cloudflare D1 y las migraciones de drizzle/. next dev sirve la interfaz; por sí solo no proporciona las APIs del Worker. No sustituir servicios por simulaciones al comprobar el diseño. La cuenta y los datos del alojamiento siguen en su servidor.
+
+No se incluyen node_modules, .git, compilaciones, variables de entorno, credenciales de alojamiento ni una copia de la base de datos. Los usuarios, contraseñas y sesiones reales no se trasladan a Claude. Las credenciales de pruebas que aparecen en tests/ son únicamente fixtures locales ficticias.
+
+Pide a Claude que devuelva los archivos modificados o un ZIP del proyecto actualizado, manteniendo las rutas. Se pueden incorporar a la web original después.

@@ -1,0 +1,526 @@
+[
+  {
+    "groupId": "coac27-comparsa-002",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Letras",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-004",
+    "fields": [
+      "locality"
+    ],
+    "rawName": "La explosión",
+    "rawAuthor": "Joaquín Fernández y José María Fuentes",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-008",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los inmunes",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-011",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los Casapuerta",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-012",
+    "fields": [
+      "name"
+    ],
+    "rawName": "A caparreo",
+    "rawAuthor": "Lolo Sevilla Pecci y Marcos Nogueroles",
+    "notes": [
+      "Revisar la lectura exacta del nombre; no se considera validada."
+    ]
+  },
+  {
+    "groupId": "coac27-comparsa-014",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los Pitis",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-018",
+    "fields": [
+      "name",
+      "author"
+    ],
+    "rawName": "Las princiternas [lectura dudosa]",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-021",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Lo perdido",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-023",
+    "fields": [
+      "author"
+    ],
+    "rawName": "De puerta en puerta",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-036",
+    "fields": [
+      "name"
+    ],
+    "rawName": "La mahalbá [lectura dudosa]",
+    "rawAuthor": "Jesús Franco",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-040",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El relojero",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-041",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Aquí vive un comparsist… [recortado]",
+    "rawAuthor": "Marcos García y Antonio Pedrosa",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-043",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los Plateros",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-044",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El viejo",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-comparsa-048",
+    "fields": [
+      "author"
+    ],
+    "rawName": "La calle",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-001",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Pppfffff...!!! [cantidad de letras/puntuación dudosa]",
+    "rawAuthor": "Paco Castro y David Castro",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-003",
+    "fields": [
+      "author",
+      "locality"
+    ],
+    "rawName": "Pa haberlos matao",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-006",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Los Carapremios [lectura dudosa]",
+    "rawAuthor": "Víctor Jurado",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-008",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los malage",
+    "rawAuthor": "Ale Helmo, Sergio Guillén «Tomate», Javi «El Cádiz»",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-009",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Payo el mio (Especie en peligro de pr… [recortado]",
+    "rawAuthor": "Mamen Rodríguez y Lidia Sánchez",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-011",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Tú va pa entro (De demoiacias manera… [recortado]",
+    "rawAuthor": "Rubén Galán",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-012",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Ay ay ay como han cambiado los Jackso… [recortado]",
+    "rawAuthor": "Miguel Choza",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-014",
+    "fields": [
+      "author",
+      "name"
+    ],
+    "rawName": "5.500 + I.V.A, si no, no IVA",
+    "rawAuthor": null,
+    "notes": [
+      "Revisar ortografía, diacríticos o puntuación del nombre."
+    ]
+  },
+  {
+    "groupId": "coac27-chirigota-016",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los que no se bajan del burro",
+    "rawAuthor": "Iván Herrera, Antoñito Molina, Juanmi Villel",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-017",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los de la cara oculta, La viña 2.0",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-023",
+    "fields": [
+      "name"
+    ],
+    "rawName": "No va dá tú ná",
+    "rawAuthor": "Los Villegas",
+    "notes": [
+      "Revisar ortografía, diacríticos o puntuación del nombre."
+    ]
+  },
+  {
+    "groupId": "coac27-chirigota-025",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los carajotes",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-026",
+    "fields": [
+      "author",
+      "locality"
+    ],
+    "rawName": "Me llega hasta el cuello",
+    "rawAuthor": null,
+    "notes": [
+      "La autoría invade visualmente la celda de localidad; revisar la imagen original."
+    ]
+  },
+  {
+    "groupId": "coac27-chirigota-027",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los enganxaos",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-028",
+    "fields": [
+      "author"
+    ],
+    "rawName": "A dos velas, los desokupas de almas",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-029",
+    "fields": [
+      "category"
+    ],
+    "rawName": "¡Vámonos de frente!",
+    "rawAuthor": "José E. Solano y Sergio Caro",
+    "notes": [
+      "La fila está en el bloque amarillo de chirigotas, pero la celda Modalidad se lee Comparsa. Requiere confirmación."
+    ]
+  },
+  {
+    "groupId": "coac27-chirigota-030",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los muerto del frío",
+    "rawAuthor": "Carlos Acal, J. Antonio Goneba y David Corral",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-033",
+    "fields": [
+      "author"
+    ],
+    "rawName": "La liga de los hombres extraordinarios",
+    "rawAuthor": "Francisco J. Fernández y Ángel Piulestán",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-034",
+    "fields": [
+      "name"
+    ],
+    "rawName": "La tita Laura (de beata a farrear aura) [lectura dudosa]",
+    "rawAuthor": "David Alvarado y J. Antonio Alvarado",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-035",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Que no te enterian [lectura dudosa]",
+    "rawAuthor": "Constancio Pérez, Fran Olivera y Sergio Toro",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-036",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Shang-bombá (así canta Pekín)",
+    "rawAuthor": "Moisés Serrano y Rubén Berea",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-037",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Los ascetas de La Caleta que buscando… [recortado]",
+    "rawAuthor": "Alejandro «Peluca»",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-038",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Que viene, que viene",
+    "rawAuthor": "David Corrales «Sise»",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-039",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los del pío pío",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-040",
+    "fields": [
+      "name"
+    ],
+    "rawName": "Los que vienen de o Mar o Montes, los… [recortado]",
+    "rawAuthor": "La agrupación",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-041",
+    "fields": [
+      "author"
+    ],
+    "rawName": "No salimos",
+    "rawAuthor": "Antonio Álvarez «Bizcocho» y Pablo de la Pri...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-042",
+    "fields": [
+      "author"
+    ],
+    "rawName": "La auténtica carnavale",
+    "rawAuthor": "Jesús David Román y Francisco Javier Gallar",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-043",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los últimos de la fila",
+    "rawAuthor": null,
+    "notes": []
+  },
+  {
+    "groupId": "coac27-chirigota-045",
+    "fields": [
+      "author",
+      "name"
+    ],
+    "rawName": "Voxes Negas (Prioridad Nazi-Oná)",
+    "rawAuthor": "Juanma Bouchano y Moisés Botana",
+    "notes": [
+      "Revisar ortografía, diacríticos o puntuación del nombre."
+    ]
+  },
+  {
+    "groupId": "coac27-coro-003",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Cádiz in love",
+    "rawAuthor": "Victoriano Cano, F. Sevilla Pecci y Luis A. Be...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-004",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El coro de P. R.",
+    "rawAuthor": "Francisco J. Fernández y Juan Carlos Mor...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-005",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El guirigay",
+    "rawAuthor": "Emilio Gutiérrez, Antonio Rodríguez y Manu...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-008",
+    "fields": [
+      "name"
+    ],
+    "rawName": "La Rebujina",
+    "rawAuthor": "Álvaro García y Jesús Rivera",
+    "notes": [
+      "Revisar la vocal central del nombre en el original."
+    ]
+  },
+  {
+    "groupId": "coac27-coro-009",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los Napoleones",
+    "rawAuthor": "Julio Pardo, Antonio Rivas y Canijo de Carm...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-010",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Pancho Villa y su brigada amarilla",
+    "rawAuthor": "José M. Valdés, César de Cózar, José M. C...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-015",
+    "fields": [
+      "author"
+    ],
+    "rawName": "Los Calichas",
+    "rawAuthor": "José Luis Orellana, Jesús Bernal, K. Álvarez",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-coro-017",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El visado",
+    "rawAuthor": "Francisco Linares y Daniel So...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-cuarteto-001",
+    "fields": [
+      "name",
+      "author"
+    ],
+    "rawName": "Un cuarteto para enmar… [recortado]",
+    "rawAuthor": "Juan Antonio Chulián, Rubén Orihuela y Jua...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-cuarteto-004",
+    "fields": [
+      "author"
+    ],
+    "rawName": "El incendiario de Cádiz",
+    "rawAuthor": "Caro y Perdi...",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-cuarteto-005",
+    "fields": [
+      "name"
+    ],
+    "rawName": "De aqui no se mueve ni… [recortado]",
+    "rawAuthor": "José M. Soto y Francisco M. Amador",
+    "notes": []
+  },
+  {
+    "groupId": "coac27-cuarteto-008",
+    "fields": [
+      "name"
+    ],
+    "rawName": "No me pises que llevo las… [recortado]",
+    "rawAuthor": "Jorge Gil y Bizcocho",
+    "notes": []
+  }
+]
