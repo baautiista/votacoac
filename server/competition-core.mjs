@@ -3,6 +3,7 @@ import defaults from '../src/lib/competition-defaults.json' with { type: 'json' 
 import { fail, clean, idOf } from './http.mjs';
 export const CATEGORIES = ['Coro', 'Comparsa', 'Chirigota', 'Cuarteto'];
 export const PHASES = ['preliminares', 'cuartos', 'semifinales', 'final'];
+export const STAGES = ['antes', 'durante'];
 export const FORECAST_PHASES = ['semifinales', 'final', 'ganador'];
 export const rows = async statement => (await statement.all()).results;
 export async function getConfig(db, editionId) {
@@ -41,6 +42,8 @@ export function validateConfig(input, catalog) {
   const number = (v, min, max, label) => { if (!Number.isFinite(v) || v < min || v > max) fail(400, `Revisa ${label}.`); return v; };
   const date = value => { if (value == null || value === '') return null; if (!Number.isFinite(Date.parse(value))) fail(400, 'Fecha no válida.'); return new Date(value).toISOString(); };
   const dates = value => { const opensAt = date(value?.opensAt), closesAt = date(value?.closesAt); if (opensAt && closesAt && Date.parse(opensAt) >= Date.parse(closesAt)) fail(400, 'El cierre debe ser posterior a la apertura.'); return { opensAt, closesAt }; };
+  if (input.stage != null && !STAGES.includes(input.stage)) fail(400, 'Etapa del concurso no válida.');
+  config.stage = input.stage ?? defaults.stage;
   for (const key of Object.keys(config.modules)) config.modules[key] = boolean(input.modules?.[key], 'los módulos');
   for (const phase of FORECAST_PHASES) {
     const window = input.forecasts?.[phase]; const limits = {};

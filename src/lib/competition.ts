@@ -4,7 +4,10 @@ export const forecastPhases = ['semifinales', 'final', 'ganador'] as const;
 export type ForecastPhase = typeof forecastPhases[number];
 export const phaseLabels: Record<string, string> = { preliminares: 'Preliminares', cuartos: 'Cuartos', semifinales: 'Semifinales', final: 'Gran Final', ganador: 'Ganadores' };
 export interface WindowConfig { enabled?: boolean; open?: boolean; opensAt: string | null; closesAt: string | null }
+export type ContestStage = 'antes' | 'durante';
 export interface CompetitionConfig {
+  /** Etapa visible del concurso. Las configuraciones antiguas pueden no tenerla: se interpreta como «antes». */
+  stage?: ContestStage;
   version: number;
   modules: Record<'predictions' | 'support' | 'traffic' | 'comparison' | 'evolution' | 'bingo' | 'league' | 'fantasy', boolean>;
   forecasts: Record<ForecastPhase, WindowConfig & { enabled: boolean; limits: Record<GroupCategory, number> }>;

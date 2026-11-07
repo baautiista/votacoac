@@ -1,7 +1,7 @@
 
 export type GroupCategory = 'Coro' | 'Comparsa' | 'Chirigota' | 'Cuarteto';
 
-export type ActiveView = 'termometro' | 'semaforo' | 'comparador' | 'evolucion' | 'pronosticos' | 'liga' | 'bingo' | 'fantasy' | 'inicio' | 'ayuda' | 'funciones' | 'rankings' | 'aguja' | 'personal' | 'admin' | 'quiniela';
+export type ActiveView = 'termometro' | 'semaforo' | 'comparador' | 'evolucion' | 'pronosticos' | 'liga' | 'bingo' | 'fantasy' | 'inicio' | 'ayuda' | 'funciones' | 'rankings' | 'aguja' | 'personal' | 'admin' | 'quiniela' | 'previa' | 'concurso';
 
 export interface Group {
   id: string;
