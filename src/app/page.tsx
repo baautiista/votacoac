@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, ArrowRight, ArrowUpRight, Heart, Search, Sparkles } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ArrowUpRight, Heart, Search, ShoppingBag, Sparkles } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { useApp } from '@/components/app-provider';
 import { GroupCard } from '@/components/group-card';
@@ -11,6 +11,8 @@ import type { ActiveView, GroupCategory, Performance } from '@/lib/types';
 import { HelpView, RankingsPanel } from '@/components/carnaval-views';
 import { CountUp, LoadingView, Reveal, ViewTransition, fadeUp, stagger } from '@/components/motion';
 import { Bunting, Confetti, Streamer } from '@/components/carnival-decor';
+import { SiteCredits } from '@/components/site-credits';
+import { externalLinkProps, externalLinks } from '@/lib/links';
 const PersonalView = dynamic(() => import('@/components/personal-view').then(m => m.PersonalView), { loading: () => <LoadingView label="Cargando tu Carnaval…" cards={0} /> });
 const PredictionView = dynamic(() => import('@/components/prediction-view').then(m => m.PredictionView), { loading: () => <LoadingView label="Cargando tu quiniela…" cards={4} /> });
 const AdminView = dynamic(() => import('@/components/admin-view').then(m => m.AdminView), { loading: () => <LoadingView label="Cargando administración…" cards={0} /> });
@@ -71,6 +73,14 @@ export default function HomePage() {
           <motion.button variants={fadeUp} whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} className="discover-block community-promo" onClick={() => navigate('rankings')}><span>ASÍ LO VE LA AFICIÓN</span><h2>El veredicto<br /><span className="serif">de la gente.</span></h2><p>Consulta las medias y el porcentaje de aptos de la comunidad.</p><span className="discover-link">Consultar resultados <ArrowUpRight size={20} /></span></motion.button>
         </motion.section>
         {tools.length > 0 && <section className="new-tools"><Reveal className="section-heading"><div><span className="mini-label">Más formas de participar</span><h2>Tu concurso tiene <span className="serif">más juego.</span></h2></div></Reveal><motion.div className="tools-grid" initial="hidden" whileInView="show" viewport={{ once: true, margin: '0px 0px -40px 0px' }} variants={stagger(0.06)}>{tools.map((item, i) => <motion.button variants={fadeUp} whileTap={{ scale: 0.98 }} className={`tool-tile tool-${item.tone}`} key={item.id} onClick={() => navigate(item.id as ActiveView)}><em>{String(i + 1).padStart(2, '0')}</em><h3>{item.title}</h3><p>{item.text}</p><span>Explorar <ArrowRight size={16} /></span></motion.button>)}</motion.div></section>}
+        <section className="shop-section" aria-labelledby="shop-title"><Reveal>
+          <div className="shop-banner">
+            <span className="shop-icon" aria-hidden="true"><ShoppingBag size={28} /></span>
+            <div className="shop-copy"><span className="mini-label">En colaboración</span><h2 id="shop-title">Tienda de <span className="serif">Al Son del Carnaval</span></h2></div>
+            <a className="action-button action-yellow shop-button" href={externalLinks.shop} {...externalLinkProps}>Visitar la tienda <ArrowUpRight size={18} aria-hidden="true" /><span className="sr-only"> (se abre en otra pestaña)</span></a>
+          </div>
+          <SiteCredits className="home-credits" />
+        </Reveal></section>
         <section className="home-bottom"><Reveal><HelpView compact /></Reveal><Reveal as="aside" className="join-panel" delay={0.1}><Heart size={30} aria-hidden="true" /><h2>Hazlo <span className="serif">tuyo.</span></h2><p>Un solo lugar para tus votos, tus favoritas y tus pronósticos.</p><button className="action-button action-white" onClick={() => state.user ? navigate('personal') : openAuth('register')}>{state.user ? 'Ir a Mi Carnaval' : 'Unirme a VotaCOAC'} <ArrowRight size={17} /></button></Reveal></section>
       </>}
       {(active === 'funciones' || active === 'aguja') && <>
@@ -95,6 +105,6 @@ export default function HomePage() {
       </AnimatePresence>
       {loading && <span className="sr-only" role="status">Conectando con la comunidad</span>}
     </main>
-    <footer className="site-footer"><Bunting className="footer-bunting" tone="dark" flags={24} /><div className="site-width footer-content"><div><button className="footer-wordmark" onClick={() => navigate('inicio')}>vota<span>COAC.</span></button><p>El carnaval lo hacemos entre todos.</p></div><nav aria-label="Pie de página"><button onClick={() => navigate('ayuda')}>Cómo funciona</button><button onClick={() => navigate('personal')}>Mi cuenta</button><a href="https://carnavalinense.es" target="_blank" rel="noreferrer">Carnavalinense <ArrowUpRight size={14} /></a></nav><div className="footer-edition"><strong>{edition.name}</strong><span>{edition.demo ? 'Demo · Datos ficticios' : 'Votación popular independiente'}</span></div></div><div className="site-width footer-bottom"><span>Proyecto independiente. Sin vinculación con el jurado oficial del COAC.</span><span>Hecho con afición, desde Cádiz.</span></div></footer>
+    <footer className="site-footer"><Bunting className="footer-bunting" tone="dark" flags={24} /><div className="site-width footer-content"><div><button className="footer-wordmark" onClick={() => navigate('inicio')}>vota<span>COAC.</span></button><p>El carnaval lo hacemos entre todos.</p></div><nav aria-label="Pie de página"><button onClick={() => navigate('ayuda')}>Cómo funciona</button><button onClick={() => navigate('personal')}>Mi cuenta</button><a href="https://carnavalinense.es" target="_blank" rel="noreferrer">Carnavalinense <ArrowUpRight size={14} /></a><a href={externalLinks.shop} {...externalLinkProps}>Tienda <ArrowUpRight size={14} aria-hidden="true" /><span className="sr-only"> (se abre en otra pestaña)</span></a></nav><div className="footer-edition"><strong>{edition.name}</strong><span>{edition.demo ? 'Demo · Datos ficticios' : 'Votación popular independiente'}</span></div></div><div className="site-width footer-credit"><SiteCredits /></div><div className="site-width footer-bottom"><span>Proyecto independiente. Sin vinculación con el jurado oficial del COAC.</span><span>Hecho con afición, desde Cádiz.</span></div></footer>
   </div>;
 }

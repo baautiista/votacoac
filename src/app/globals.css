@@ -1373,3 +1373,48 @@
 .admin-form .checkbox-label { flex-direction:row!important; align-items:center; gap:10px; }
 @media (max-width:600px) { .podium-name { font-size:14px; overflow-wrap:break-word; } .step-1 .podium-name { font-size:16px; } .podium-value { font-size:20px; } }
 @media (min-width:1101px) { .forecast-layout .choice-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } .thermo-picker .choice-grid { grid-template-columns:repeat(5,minmax(0,1fr)); } }
+
+/* ==========================================================================
+   Créditos y tienda de Al Son del Carnaval
+   ========================================================================== */
+.nav-shop { color:var(--pink-deep); }
+.nav-shop>svg { opacity:.8; }
+.menu-shop-link { display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700; color:var(--pink-deep); }
+
+.shop-section { margin-top:88px; }
+.shop-banner { position:relative; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:28px; padding:40px 44px; border-radius:var(--r-lg); background:var(--ink); color:#fff; overflow:hidden; isolation:isolate; box-shadow:var(--shadow-md); }
+.shop-banner::before { content:''; position:absolute; z-index:-1; inset:0 auto 0 0; width:10px; background:linear-gradient(var(--yellow) 0 25%,var(--pink) 25% 50%,var(--green) 50% 75%,var(--orange) 75%); }
+.shop-banner::after { content:''; position:absolute; z-index:-1; right:-70px; top:-70px; width:220px; height:220px; border-radius:50%; border:28px solid rgba(59,132,250,.35); transition:transform .6s var(--ease-out); }
+.shop-banner:hover::after { transform:scale(1.12) rotate(20deg); }
+.shop-icon { display:grid; place-items:center; width:64px; height:64px; border-radius:var(--r-md); background:var(--pink); color:#fff; transform:rotate(-6deg); }
+.shop-copy .mini-label { color:#CFCBEA; }
+.shop-copy h2 { font-size:clamp(30px,3.6vw,48px); line-height:1; margin-top:10px; color:#fff; }
+.shop-copy h2 .serif { color:var(--yellow); font-size:1.06em; }
+.shop-button { white-space:nowrap; transition:transform .25s var(--ease-out),box-shadow .25s var(--ease-out); }
+.shop-button:hover { transform:translateY(-2px); }
+
+.site-credits { font-size:15px; line-height:1.6; }
+.site-credits a { font-weight:700; text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px; transition:color .2s; }
+.home-credits { margin-top:18px; text-align:center; color:var(--ink-soft); }
+.home-credits a { color:var(--blue-deep); text-decoration-color:rgba(59,132,250,.4); }
+.home-credits a:hover { color:var(--pink-deep); text-decoration-color:currentColor; }
+.footer-credit { position:relative; margin-top:36px; }
+.footer-credit .site-credits { color:#E4E1F4; }
+.footer-credit a { color:#fff; text-decoration-color:var(--yellow); }
+.footer-credit a:hover { color:var(--yellow); }
+.site-credits a:focus-visible { outline:2px solid var(--blue); outline-offset:3px; border-radius:4px; }
+
+@media (max-width:900px) {
+ .shop-banner { grid-template-columns:auto 1fr; padding:34px 32px; }
+ .shop-button { grid-column:1/-1; justify-self:start; }
+}
+@media (max-width:600px) {
+ .shop-section { margin-top:64px; }
+ .shop-banner { grid-template-columns:1fr; gap:18px; padding:28px 24px 28px 30px; }
+ .shop-icon { width:52px; height:52px; }
+ .shop-button { width:100%; white-space:normal; }
+ .site-credits { font-size:14px; }
+ .home-credits { text-align:left; }
+ .footer-credit { margin-top:28px; }
+}
+@media (prefers-reduced-motion:reduce) { .shop-banner::after,.shop-button { transition:none; } }
