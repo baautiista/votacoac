@@ -7,9 +7,9 @@ const config: Config = {
   theme: {
     container: { center: true, padding: '2rem', screens: { '2xl': '1400px' } },
     extend: {
-      fontFamily: { sans: ['DM Sans', 'sans-serif'], headline: ['Outfit', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+      fontFamily: { sans: ['DM Sans', 'system-ui', 'sans-serif'], headline: ['Bricolage Grotesque', 'Outfit', 'sans-serif'], display: ['Bricolage Grotesque', 'Outfit', 'sans-serif'], serif: ['Instrument Serif', 'Georgia', 'serif'] },
       colors: {
-        brand: '#3B84FA', navy: '#171344', mint: '#EFF9F0', raspberry: '#C92168', coral: '#FF7B2E', butter: '#F2BE26', sky: '#E6EEFF',
+        brand: '#3B84FA', navy: '#171344', mint: '#EFF9F0', raspberry: '#C92168', coral: '#FF7B2E', butter: '#F2BE26', sky: '#E6EEFF', paper: '#FBF8F2', lime: '#8BD557',
         background: 'hsl(var(--background))', foreground: 'hsl(var(--foreground))',
         card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
         popover: { DEFAULT: 'hsl(var(--popover))', foreground: 'hsl(var(--popover-foreground))' },

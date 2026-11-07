@@ -34,12 +34,13 @@ export function VotingDialog({ isOpen, onClose, group, onVoteSuccess, votedTypes
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold leading-snug">{group.name}</DialogTitle>
+          <span className="mini-label">{group.category}</span>
+          <DialogTitle className="auth-title">{group.name}</DialogTitle>
           <DialogDescription>
-            {group.category} · Puedes emitir un voto de cada tipo por actuación.
+            Puedes emitir un voto de cada tipo por actuación.
           </DialogDescription>
         </DialogHeader>
-        {!submissionAvailable && <p role="status" className="rounded-xl bg-sky px-4 py-3 text-sm">El envío de votos no está disponible temporalmente.</p>}
+        {!submissionAvailable && <p role="status" className="rounded-2xl border border-[#FF7B2E]/40 bg-[#FFEDE0] px-4 py-3 text-sm font-medium text-[#A8460B]">El envío de votos no está disponible temporalmente.</p>}
         <Tabs defaultValue={hasVotedApto ? "advanced" : "apto"} className="w-full pt-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="apto" disabled={hasVotedApto}>Apto / No Apto {hasVotedApto && "✔️"}</TabsTrigger>
