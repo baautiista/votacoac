@@ -98,3 +98,9 @@ test('a closure racing with a pending support write is checked atomically at dat
  f.DB.prepare=sql=>{const statement=originalPrepare(sql);if(sql.startsWith('INSERT INTO precontest_support')){const run=statement.run.bind(statement);statement.run=async()=>{reached();await gate;return run();};}return statement;};
  const pending=f.call('/api/competition/support','PUT',{groupId:'demo-brujula'},u.cookie);await blocked;await publishConfig(f,owner.cookie,c=>{c.support.open=false;});release();assert.equal((await pending).status,423);assert.equal(f.DB.sqlite.prepare('SELECT COUNT(*) count FROM precontest_support').get().count,0);f.DB.sqlite.close();
 });
+test('contest stage defaults to before, persists from administration and rejects unknown values',async()=>{
+ const f=setup();const owner=await admin(f);const current=await f.call('/api/admin/modules','GET',undefined,owner.cookie);assert.equal(current.data.config.stage??'antes','antes');
+ const saved=await publishConfig(f,owner.cookie,c=>{c.stage='durante';});assert.equal(saved.stage,'durante');
+ const legacy=await publishConfig(f,owner.cookie,c=>{delete c.stage;});assert.equal(legacy.stage,'antes');
+ const latest=await f.call('/api/admin/modules','GET',undefined,owner.cookie);const bad=await f.call('/api/admin/modules','PUT',{config:{...latest.data.config,stage:'despues'},expectedRevision:latest.data.revision,reason:'Etapa no válida de prueba'},owner.cookie);assert.equal(bad.status,400);f.DB.sqlite.close();
+});
