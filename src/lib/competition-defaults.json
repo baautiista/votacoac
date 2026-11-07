@@ -12,6 +12,17 @@
     "fantasy": true
   },
   "forecasts": {
+    "top5": {
+      "enabled": true,
+      "opensAt": null,
+      "closesAt": null,
+      "limits": {
+        "Coro": 5,
+        "Comparsa": 5,
+        "Chirigota": 5,
+        "Cuarteto": 5
+      }
+    },
     "semifinales": {
       "enabled": true,
       "opensAt": null,
@@ -50,7 +61,8 @@
     "semifinales": 30,
     "final": 60,
     "ganador": 150,
-    "exactPosition": 100
+    "exactPosition": 100,
+    "top5": 1
   },
   "support": {
     "open": true,
@@ -71,7 +83,7 @@
     "situations": [
       {
         "id": "bingo-01",
-        "text": "El público pide otra"
+        "text": "Cuplé a Andy y Lucas"
       },
       {
         "id": "bingo-02",

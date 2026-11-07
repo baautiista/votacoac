@@ -31,10 +31,10 @@ export default function HomePage() {
   const stage = stageOf(state.competition?.config); const isAdmin = state.user?.role === 'admin'; const area: StageArea = homeArea ?? stage;
   const locked = stage === 'antes' && isDuringView(active) && !isAdmin; const waitingStage = isDuringView(active) && !ready && !state.competition;
   useEffect(() => {
-    const update = () => { const value = window.location.hash.slice(1) as ActiveView; setActive(viewNames.includes(value) ? value : 'inicio'); };
+    const update = () => { const raw = window.location.hash.slice(1) as ActiveView; const value = raw === 'quiniela' || raw === 'termometro' ? 'pronosticos' : raw; setActive(viewNames.includes(value) ? value : 'inicio'); };
     update(); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update);
   }, []);
-  const navigate = (view: ActiveView) => { setActive(view); window.history.replaceState(null, '', `${window.location.pathname}#${view}`); window.scrollTo({ top: 0, behavior: 'instant' }); };
+  const navigate = (requested: ActiveView) => { const view = requested === 'quiniela' || requested === 'termometro' ? 'pronosticos' : requested; setActive(view); window.history.replaceState(null, '', `${window.location.pathname}#${view}`); window.scrollTo({ top: 0, behavior: 'instant' }); };
   const performances: Performance[] = session === 'all'
     ? state.catalog.groups.flatMap(group => { const acts = state.catalog.sessions.flatMap(s => s.performances.filter(p => p.groupId === group.id).map(p => ({ id: p.id, actTime: p.actTime, group, scheduled: true }))); return acts.length ? acts : [{ id: `pending_${group.id}`, actTime: '9999-01-01T00:00:00Z', group, scheduled: false }]; })
     : state.catalog.sessions.filter(s => s.id === session).flatMap(s => s.performances.map(p => ({ id: p.id, actTime: p.actTime, group: state.catalog.groups.find(g => g.id === p.groupId)!, scheduled: true }))).filter(p => p.group);
@@ -56,7 +56,7 @@ export default function HomePage() {
           <motion.div className="hero-copy" initial="hidden" animate="show" variants={stagger(0.09, 0.1)}>
             <motion.span className="hero-kicker" variants={fadeUp}>{stage === 'antes' ? 'SE ABRE EL TELÓN DE LA PREVIA' : 'EL CONCURSO ESTÁ EN ESCENA'}</motion.span>
             <motion.h1 id="hero-title" variants={fadeUp}>El carnaval<br />también lleva<br /><span className="serif">tu voz.</span></motion.h1>
-            <motion.p variants={fadeUp}>{stage === 'antes' ? 'Elige tus favoritas, prepara tu quiniela y monta tu liga antes del primer pase.' : 'Puntúa cada actuación, sigue los rankings y vive el concurso a tu manera.'}</motion.p>
+            <motion.p variants={fadeUp}>{stage === 'antes' ? 'Elige las cinco de cada modalidad, crea tu bingo y vive la previa con tu peña.' : 'Estas son las cinco que el público cree que llegarán más lejos. Guarda las tuyas y comprueba tus aciertos al terminar.'}</motion.p>
             <motion.div className="hero-actions" variants={fadeUp}>{stage === 'antes' ? <><button className="action-button action-yellow" onClick={() => navigate('previa')}>Entrar a la previa <ArrowRight size={18} /></button><button className="hero-link" onClick={() => navigate('concurso')}>Lo que llega en el concurso <ArrowUpRight size={17} /></button></> : <><button className="action-button action-yellow" onClick={() => navigate('funciones')}>Quiero votar <ArrowRight size={18} /></button><button className="hero-link" onClick={() => navigate('rankings')}>Ver los rankings <ArrowUpRight size={17} /></button></>}</motion.div>
             <motion.div className="hero-footnote" variants={fadeUp}>COAC 2027 <span>✦</span> Cádiz tiene mucho que decir.</motion.div>
           </motion.div>

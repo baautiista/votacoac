@@ -60,15 +60,20 @@ test('private leagues require high-entropy invitations, hide details from outsid
  const detail=(await f.call(`/api/competition/leagues/${id}`,'GET',undefined,b.cookie)).data;assert.equal(detail.members.length,2);assert.equal(JSON.stringify(detail).includes('friend@example.test'),false);assert.equal((await f.call(`/api/competition/leagues/${id}/invite`,'POST',{},b.cookie)).status,403);
  const rotated=await f.call(`/api/competition/leagues/${id}/invite`,'POST',{},a.cookie);assert.equal(rotated.status,200);assert.notEqual(rotated.data.inviteCode,created.data.inviteCode);assert.equal((await f.call(`/api/competition/leagues/${id}`,'DELETE',undefined,b.cookie)).status,200);assert.equal((await f.call(`/api/competition/leagues/${id}`,'GET',undefined,b.cookie)).status,404);f.DB.sqlite.close();
 });
-test('bingo cards persist per function, detect lines and validate competitive marks without rewarding pre-marking',async()=>{
- const f=setup();const owner=await admin(f),a=await f.register(),b=await f.register('other@example.test');const draw=await f.call('/api/competition/bingo','POST',{sessionId:'demo-sesion-1'},a.cookie);assert.equal(draw.status,201);const card=draw.data.card;assert.equal(card.cells.length,25);assert.equal(new Set(card.cells.map(c=>c.id)).size,25);
- const same=await f.call('/api/competition/bingo','POST',{sessionId:'demo-sesion-1'},a.cookie);assert.equal(same.data.card.id,card.id);const other=await f.call('/api/competition/bingo','POST',{sessionId:'demo-sesion-1'},b.cookie);assert.notDeepEqual(other.data.card.cells,card.cells);
- const indices=[0,1,2,3,4];assert.equal((await f.call('/api/competition/bingo','PUT',{cardId:card.id,marked:indices},a.cookie)).data.card.verified.marked.length,0);
- for(const i of indices)assert.equal((await f.call('/api/admin/bingo-events','PUT',{sessionId:'demo-sesion-1',situationId:card.cells[i].id,occurred:true,reason:'Situación verificada de prueba'},owner.cookie)).status,200);
- let current=(await f.call('/api/competition/bingo?session=demo-sesion-1','GET',undefined,a.cookie)).data.card;assert.equal(current.verified.marked.length,0);
- await f.call('/api/competition/bingo','PUT',{cardId:card.id,marked:[]},a.cookie);const marked=await f.call('/api/competition/bingo','PUT',{cardId:card.id,marked:indices,points:99999},a.cookie);assert.equal(marked.data.card.verified.lines.length,1);
- const league=(await f.call('/api/competition/bingo/ranking?session=demo-sesion-1')).data;assert.equal(league.ranking[0].points,10);assert.equal((await f.call('/api/competition/bingo','PUT',{cardId:card.id,marked:[0]},b.cookie)).status,404);assert.equal((await f.call('/api/competition/bingo','PUT',{cardId:card.id,marked:[25]},a.cookie)).status,400);
- assert.equal(bingoLines(Array.from({length:25},(_,i)=>i)).lines.length,12);assert.equal(bingoLines(Array.from({length:25},(_,i)=>i)).bingo,true);assert.equal((await f.call('/api/competition/bingo/ranking?session=libre')).data.ranking.length,0);f.DB.sqlite.close();
+test('legacy twenty-five-cell cards retain their original event validation and progress',async()=>{
+ const f=setup();const owner=await admin(f),a=await f.register(),b=await f.register('other@example.test');
+ const cells=defaults.bingo.situations.slice(0,25),cardId='legacy-bingo-card';
+ f.DB.sqlite.prepare('INSERT INTO member_profiles(user_id,handle,created_at) VALUES(?,?,?)').run(a.data.user.id,'legacy-player',1);
+ f.DB.sqlite.prepare('INSERT INTO bingo_cards(id,user_id,edition_id,session_id,cells,marked,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)').run(cardId,a.data.user.id,demo.edition.id,'demo-sesion-1',JSON.stringify(cells),JSON.stringify({claimed:[],validated:[]}),1,1);
+ let card=(await f.call('/api/competition/bingo?session=demo-sesion-1','GET',undefined,a.cookie)).data.card;assert.equal(card.cells.length,25);
+ const indices=[0,1,2,3,4];assert.equal((await f.call('/api/competition/bingo','PUT',{cardId,marked:indices},a.cookie)).data.card.verified.marked.length,0);
+ for(const i of indices)assert.equal((await f.call('/api/admin/bingo-events','PUT',{sessionId:'demo-sesion-1',situationId:cells[i].id,occurred:true,reason:'Situación verificada de prueba'},owner.cookie)).status,200);
+ card=(await f.call('/api/competition/bingo?session=demo-sesion-1','GET',undefined,a.cookie)).data.card;assert.equal(card.verified.marked.length,0);
+ await f.call('/api/competition/bingo','PUT',{cardId,marked:[]},a.cookie);
+ const marked=await f.call('/api/competition/bingo','PUT',{cardId,marked:indices,points:99999},a.cookie);assert.equal(marked.data.card.verified.lines.length,1);
+ assert.equal((await f.call('/api/competition/bingo/ranking?session=demo-sesion-1')).data.ranking[0].points,10);
+ assert.equal((await f.call('/api/competition/bingo','PUT',{cardId,marked:[0]},b.cookie)).status,404);
+ assert.equal(bingoLines(Array.from({length:25},(_,i)=>i)).lines.length,12);f.DB.sqlite.close();
 });
 test('traffic lights require a minimum sample and histories use real votes without filling missing phases',async()=>{
  assert.equal(trafficLight({advanced:{average:288,count:4}},'Comparsa',defaults.traffic).level,'insufficient');assert.equal(trafficLight({advanced:{average:224,count:5}},'Cuarteto',defaults.traffic).level,'excellent');assert.equal(trafficLight({apto:{average:65,count:5}},'Comparsa',defaults.traffic).level,'good');

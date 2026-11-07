@@ -1,15 +1,16 @@
 import {invalidatePublic} from './public-cache.mjs';
 import { fail, json, clean, bodyOf, idOf } from './http.mjs';
 import { sha256, token } from './crypto.mjs';
-import { CATEGORIES, PHASES, FORECAST_PHASES, rows, getConfig, audit, event, ensureProfile, windowState, forecastWindow, validateConfig, scoreStatements, badges, ranking, performanceMetrics, trafficLight, recordMetrics, supportSnapshot, randomCells, cardForClient } from './competition-core.mjs';
+import { CATEGORIES, PHASES, FORECAST_PHASES, rows, getConfig, audit, event, ensureProfile, windowState, forecastWindow, validateConfig, scoreStatements, badges, ranking, performanceMetrics, trafficLight, recordMetrics, supportSnapshot } from './competition-core.mjs';
 import reviewRows from '../src/lib/catalogue-review.json' with { type: 'json' };
 import legacyCatalog from '../src/lib/demo-catalog.json' with { type: 'json' };
+import { topFiveOverview, handlePersonalBingo, handleBingoReviews } from './personal-games.mjs';
 
 export async function getCompetitionState(db, catalog, user) {
   const { config, revision } = await getConfig(db, catalog.edition.id);
   const [metrics, publications] = await Promise.all([performanceMetrics(db, catalog), rows(db.prepare('SELECT phase,category,source,published_at FROM result_publications WHERE edition_id=?').bind(catalog.edition.id))]);
   const windows = {};
-  for (const phase of FORECAST_PHASES) windows[phase] = publications.some(p => p.phase === phase) ? { open: false, reason: 'Resultados publicados' } : windowState(config.forecasts[phase], Date.now(), true);
+  for (const phase of FORECAST_PHASES) windows[phase] = publications.some(p => p.phase === phase) ? { open: false, reason: 'Resultados publicados' } : windowState(config.forecasts[phase], Date.now(), phase !== 'top5');
   let personal = { forecasts: {}, support: {}, handle: null, points: 0, hits: 0, exactHits: 0, position: null, badges: [] };
   if (user) {
     const [forecasts, support, profiles, scores] = await db.batch([
@@ -63,13 +64,18 @@ export async function handleCompetition(request, env, ctx) {
   const { config, revision } = await getConfig(db, editionId);
   const userWrite = async (scope = 'competition', maximum = 60) => { const user = await ctx.requireUser(request, db); await ctx.throttle(db, request, scope, user.id, maximum, 60000); return user; };
   if (path === '/api/competition/overview' && method === 'GET') return json(await getCompetitionState(db, catalog, await ctx.getUser(request, db)));
+  if (path === '/api/competition/top-five' && method === 'GET') {
+    requireModule(config, 'predictions');
+    return json(await topFiveOverview(db, catalog, config, await ctx.getUser(request, db)));
+  }
   if (path === '/api/competition/forecast' && method === 'PUT') {
     requireModule(config, 'predictions'); const user = await userWrite('forecast', 30); const input = await bodyOf(request); const phase = input.phase;
     if (!FORECAST_PHASES.includes(phase)) fail(400, 'Fase de pronóstico no válida.');
     const window = await forecastWindow(db, catalog, config, phase); if (!window.open) fail(423, window.reason, 'forecast_closed');
     const selection = {};
     for (const cat of CATEGORIES) { const list = input.selection?.[cat]; if (!Array.isArray(list) || list.length > config.forecasts[phase].limits[cat] || new Set(list).size !== list.length || list.some(id => !catalog.groups.some(g => g.id === id && g.category === cat))) fail(400, 'Revisa la selección y el límite por modalidad.'); selection[cat] = list; }
-    await ensureProfile(db, user); const now = Date.now(); const deadline = Date.parse(config.forecasts[phase].closesAt);
+    if (phase === 'top5' && CATEGORIES.some(cat => selection[cat].length !== 5)) fail(400, 'Elige exactamente cinco agrupaciones de cada modalidad.');
+    await ensureProfile(db, user); const now = Date.now(); const deadline = config.forecasts[phase].closesAt ? Date.parse(config.forecasts[phase].closesAt) : Number.MAX_SAFE_INTEGER;
     const gate = `NOT EXISTS(SELECT 1 FROM result_publications WHERE edition_id=? AND phase=?) AND CAST((julianday('now')-2440587.5)*86400000 AS INTEGER)<? AND NOT EXISTS(SELECT 1 FROM module_settings WHERE edition_id=? AND revision<>?)`;
     const result = await db.prepare(`INSERT INTO phase_forecasts(id,user_id,edition_id,phase,selection,created_at,updated_at) SELECT ?,?,?,?,?,?,? WHERE ${gate} ON CONFLICT(user_id,edition_id,phase) DO UPDATE SET selection=excluded.selection,updated_at=excluded.updated_at WHERE ${gate}`).bind(crypto.randomUUID(), user.id, editionId, phase, JSON.stringify(selection), now, now, editionId, phase, deadline, editionId, revision, editionId, phase, deadline, editionId, revision).run();
     if (!result.meta?.changes) fail(423, 'El plazo ha terminado o la configuración ha cambiado. Actualiza la página.');
@@ -142,43 +148,8 @@ export async function handleCompetition(request, env, ctx) {
     if (method === 'DELETE' && !leagueRoute[2]) { if (league.owner_id === user.id) await db.prepare('DELETE FROM private_leagues WHERE id=?').bind(league.id).run(); else await db.prepare('DELETE FROM league_members WHERE league_id=? AND user_id=?').bind(league.id, user.id).run(); return json({ ok: true }); }
     fail(405, 'Operación no permitida.');
   }
-  if (path === '/api/competition/bingo' && method === 'GET') {
-    requireModule(config, 'bingo'); const readAt = Date.now(); const sessionId = url.searchParams.get('session') || 'libre';
-    const session = catalog.sessions.find(s => s.id === sessionId); if (sessionId !== 'libre' && !session) fail(404, 'Función no disponible.');
-    const events = await rows(db.prepare('SELECT situation_id,occurred FROM bingo_events WHERE edition_id=? AND session_id=?').bind(editionId, sessionId)); const confirmedIds = new Set(events.filter(e => e.occurred).map(e => e.situation_id)); const user = await ctx.getUser(request, db);
-    const card = user ? await db.prepare('SELECT * FROM bingo_cards WHERE user_id=? AND edition_id=? AND session_id=?').bind(user.id, editionId, sessionId).first() : null;
-    let window = windowState(config.bingo); if (session && session.performances.length && Date.now() < Math.min(...session.performances.map(p => Date.parse(p.actTime)))) window = { open: false, reason: 'La función todavía no ha comenzado' };
-    return json({ readAt, sessionId, practice: sessionId === 'libre', competitive: config.bingo.competitive && sessionId !== 'libre', window, confirmed: [...confirmedIds], card: card ? cardForClient(card, confirmedIds) : null });
-  }
-  if (path === '/api/competition/bingo' && method === 'POST') {
-    requireModule(config, 'bingo'); const user = await userWrite('bingo-draw', 10); const input = await bodyOf(request); const sessionId = input.sessionId || 'libre';
-    if (sessionId !== 'libre' && !catalog.sessions.some(s => s.id === sessionId)) fail(400, 'Función no válida.');
-    const window = windowState(config.bingo); if (!window.open) fail(423, window.reason); await ensureProfile(db, user);
-    await db.prepare('INSERT OR IGNORE INTO bingo_cards(id,user_id,edition_id,session_id,cells,marked,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(), user.id, editionId, sessionId, JSON.stringify(randomCells(config.bingo.situations)), JSON.stringify({ claimed: [], validated: [] }), Date.now(), Date.now()).run();
-    const card = await db.prepare('SELECT * FROM bingo_cards WHERE user_id=? AND edition_id=? AND session_id=?').bind(user.id, editionId, sessionId).first(); return json({ card: cardForClient(card, new Set()) }, 201);
-  }
-  if (path === '/api/competition/bingo' && method === 'PUT') {
-    requireModule(config, 'bingo'); const user = await userWrite('bingo-mark', 90); const input = await bodyOf(request); const card = await db.prepare('SELECT * FROM bingo_cards WHERE id=? AND user_id=? AND edition_id=?').bind(String(input.cardId || ''), user.id, editionId).first(); if (!card) fail(404, 'Cartón no disponible.');
-    const marked = input.marked; if (!Array.isArray(marked) || marked.length > 25 || new Set(marked).size !== marked.length || marked.some(i => !Number.isInteger(i) || i < 0 || i > 24)) fail(400, 'Casillas no válidas.');
-    const window = windowState(config.bingo); if (!window.open) fail(423, window.reason);
-    const session = catalog.sessions.find(s => s.id === card.session_id); if (session && session.performances.length && Date.now() < Math.min(...session.performances.map(p => Date.parse(p.actTime)))) fail(423, 'La función todavía no ha comenzado.');
-    const confirmed = new Set((await rows(db.prepare('SELECT situation_id FROM bingo_events WHERE edition_id=? AND session_id=? AND occurred=1').bind(editionId, card.session_id))).map(e => e.situation_id));
-    const cells = JSON.parse(card.cells), previous = JSON.parse(card.marked); const old = Array.isArray(previous) ? previous : previous.claimed; const validated = new Set(Array.isArray(previous) ? [] : previous.validated);
-    // Only newly marked, already confirmed events count competitively. Pre-marking the board cannot earn future points.
-    const eligible = marked.filter(i => confirmed.has(cells[i].id) && (validated.has(i) || !old.includes(i)));
-    const now = Date.now(); const saved = await db.prepare("UPDATE bingo_cards SET marked=?,updated_at=? WHERE id=? AND user_id=? AND CAST((julianday('now')-2440587.5)*86400000 AS INTEGER)<? AND NOT EXISTS(SELECT 1 FROM module_settings WHERE edition_id=? AND revision<>?)").bind(JSON.stringify({ claimed: marked, validated: eligible }), now, card.id, user.id, config.bingo.closesAt ? Date.parse(config.bingo.closesAt) : Number.MAX_SAFE_INTEGER, editionId, revision).run();
-    if (!saved.meta?.changes) fail(423, 'El bingo se ha cerrado o ha cambiado su configuración.');
-    return json({ card: cardForClient({ ...card, marked: JSON.stringify({ claimed: marked, validated: eligible }), updated_at: now }, confirmed) });
-  }
-  if (path === '/api/competition/bingo/ranking' && method === 'GET') {
-    requireModule(config, 'bingo'); const sessionId = url.searchParams.get('session');
-    if (!sessionId || sessionId === 'libre' || !config.bingo.competitive) return json({ ranking: [], practice: true });
-    if (!catalog.sessions.some(s => s.id === sessionId)) fail(404, 'Función no válida.');
-    const confirmed = new Set((await rows(db.prepare('SELECT situation_id FROM bingo_events WHERE edition_id=? AND session_id=? AND occurred=1').bind(editionId, sessionId))).map(e => e.situation_id));
-    const cards = await rows(db.prepare(`SELECT c.*,p.handle FROM bingo_cards c JOIN member_profiles p ON p.user_id=c.user_id LEFT JOIN account_moderation m ON m.user_id=c.user_id WHERE c.edition_id=? AND c.session_id=? AND COALESCE(m.status,'active')<>'suspended' ORDER BY json_array_length(json_extract(c.marked,'$.validated')) DESC,c.updated_at ASC LIMIT 200`).bind(editionId, sessionId));
-    const list = cards.map(c => { const checked = cardForClient(c, confirmed).verified; return { handle: c.handle, marks: checked.marked.length, lines: checked.lines.length, bingo: checked.bingo, points: checked.marked.length + checked.lines.length * 5 + (checked.bingo ? 50 : 0) }; }).filter(row => row.marks).sort((a, b) => b.points - a.points || a.handle.localeCompare(b.handle));
-    return json({ ranking: list.map((r, i) => ({ ...r, position: i + 1 })), confirmedEvents: confirmed.size, practice: false });
-  }
+  if (path === '/api/competition/bingo' || path === '/api/competition/bingo/ranking') return handlePersonalBingo(request, ctx, catalog, config, revision);
+  if (path === '/api/admin/bingo-cards') return handleBingoReviews(request, ctx, catalog);
   if (path === '/api/competition/insights' && method === 'GET') {
     if (!config.modules.comparison && !config.modules.evolution && !config.modules.traffic) fail(423, 'Las estadísticas están desactivadas.');
     const ids = [...new Set((url.searchParams.get('groups') || '').split(',').filter(Boolean))]; if (!ids.length || ids.length > 2 || ids.some(id => !catalog.groups.some(g => g.id === id))) fail(400, 'Selecciona una o dos agrupaciones válidas.');
@@ -210,10 +181,11 @@ export async function handleCompetition(request, env, ctx) {
       await db.batch(statements); return json({ ok: true, revision: revision + 1, config: next });
     }
     if (path === '/api/admin/results' && method === 'PUT') {
-      const input = await bodyOf(request); const phase = input.phase, category = input.category; if (!PHASES.includes(phase) || !CATEGORIES.includes(category) || input.confirmed !== true) fail(400, 'Confirma la fase, modalidad y verificación de los resultados.');
+      const input = await bodyOf(request); const phase = input.phase, category = input.category; if (![...PHASES, 'top5'].includes(phase) || !CATEGORIES.includes(category) || input.confirmed !== true) fail(400, 'Confirma la fase, modalidad y verificación de los resultados.');
       const source = clean(input.source, 500, 'la fuente de los resultados', 5), reason = clean(input.reason, 240, 'el motivo', 5); if (!Array.isArray(input.results) || input.results.length > 100) fail(400, 'Resultados no válidos.');
       const results = input.results.map(r => { if (!catalog.groups.some(g => g.id === r.groupId && g.category === category) || (r.position !== null && (!Number.isInteger(r.position) || r.position < 1 || r.position > 100))) fail(400, 'Agrupación o puesto no válido.'); return { groupId: r.groupId, position: r.position }; });
       if (new Set(results.map(r => r.groupId)).size !== results.length || new Set(results.filter(r => r.position !== null).map(r => r.position)).size !== results.filter(r => r.position !== null).length) fail(400, 'Hay agrupaciones o puestos duplicados.');
+      if (phase === 'top5' && (results.length !== 5 || results.some(r => r.position == null || r.position > 5))) fail(400, 'Publica las cinco agrupaciones que más lejos llegaron, con puestos del 1 al 5.');
       const before = await rows(db.prepare('SELECT group_id,position,source FROM official_results WHERE edition_id=? AND phase=? AND category=?').bind(editionId, phase, category)); const now = Date.now();
       const statements = [db.prepare('DELETE FROM official_results WHERE edition_id=? AND phase=? AND category=?').bind(editionId, phase, category), ...results.map(r => db.prepare('INSERT INTO official_results(id,edition_id,phase,category,group_id,position,source,updated_at) VALUES(?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(), editionId, phase, category, r.groupId, r.position, source, now)), db.prepare('INSERT INTO result_publications(edition_id,phase,category,source,published_at) VALUES(?,?,?,?,?) ON CONFLICT(edition_id,phase,category) DO UPDATE SET source=excluded.source').bind(editionId, phase, category, source, now), audit(db, admin, 'results.publish', `${editionId}:${phase}:${category}`, before, {results,source,phase,category}, reason), event(db, editionId, 'results.updated', `${phase}:${category}`, { phase, category, source, results })];
       if (phase === 'final' && results.some(r => r.position === 1)) statements.push(db.prepare('INSERT INTO result_publications(edition_id,phase,category,source,published_at) VALUES(?,?,?,?,?) ON CONFLICT(edition_id,phase,category) DO UPDATE SET source=excluded.source').bind(editionId, 'ganador', category, source, now));

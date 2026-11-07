@@ -4,11 +4,13 @@ import { fail, clean, idOf } from './http.mjs';
 export const CATEGORIES = ['Coro', 'Comparsa', 'Chirigota', 'Cuarteto'];
 export const PHASES = ['preliminares', 'cuartos', 'semifinales', 'final'];
 export const STAGES = ['antes', 'durante'];
-export const FORECAST_PHASES = ['semifinales', 'final', 'ganador'];
+export const FORECAST_PHASES = ['top5', 'semifinales', 'final', 'ganador'];
 export const rows = async statement => (await statement.all()).results;
 export async function getConfig(db, editionId) {
   const saved = await db.prepare('SELECT config,revision FROM module_settings WHERE edition_id=?').bind(editionId).first();
-  return { config: saved ? JSON.parse(saved.config) : structuredClone(defaults), revision: saved?.revision || 0 };
+  const previous = saved ? JSON.parse(saved.config) : {};
+  const config = { ...structuredClone(defaults), ...previous, forecasts: { ...structuredClone(defaults.forecasts), ...previous.forecasts }, points: { ...defaults.points, ...previous.points } };
+  return { config, revision: saved?.revision || 0 };
 }
 export function audit(db, actor, action, entity, before, after, reason) {
   return db.prepare('INSERT INTO admin_audit(id,actor_id,action,entity,before_data,after_data,reason,created_at) VALUES(?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(), actor.id, action, entity, before == null ? null : JSON.stringify(before), after == null ? null : JSON.stringify(after), reason, Date.now());
@@ -29,7 +31,7 @@ export function windowState(window, now = Date.now(), requireClose = false) {
   return { open: true, reason: '' };
 }
 export async function forecastWindow(db, catalog, config, phase) {
-  const win = windowState(config.forecasts[phase], Date.now(), true);
+  const win = windowState(config.forecasts[phase], Date.now(), phase !== 'top5');
   const resultPhase = phase === 'ganador' ? 'ganador' : phase;
   const published = await db.prepare('SELECT phase FROM result_publications WHERE edition_id=? AND phase=? LIMIT 1').bind(catalog.edition.id, resultPhase).first();
   if (published) return { open: false, reason: 'Los resultados de esta fase ya se han publicado' };
@@ -46,16 +48,17 @@ export function validateConfig(input, catalog) {
   config.stage = input.stage ?? defaults.stage;
   for (const key of Object.keys(config.modules)) config.modules[key] = boolean(input.modules?.[key], 'los módulos');
   for (const phase of FORECAST_PHASES) {
-    const window = input.forecasts?.[phase]; const limits = {};
+    const window = input.forecasts?.[phase] ?? (phase === 'top5' ? defaults.forecasts.top5 : undefined); const limits = {};
     for (const cat of CATEGORIES) limits[cat] = number(window?.limits?.[cat], 1, phase === 'ganador' ? 1 : 100, 'los límites de selección');
     config.forecasts[phase] = { enabled: boolean(window?.enabled, 'el estado del pronóstico'), ...dates(window), limits };
+    if (phase === 'top5' && CATEGORIES.some(cat => limits[cat] !== 5)) fail(400, 'La quiniela del público tiene cinco agrupaciones por modalidad.');
   }
-  for (const key of Object.keys(config.points)) config.points[key] = Math.round(number(input.points?.[key], 0, 10000, 'los puntos por acierto'));
+  for (const key of Object.keys(config.points)) config.points[key] = Math.round(number(input.points?.[key] ?? (key === 'top5' ? defaults.points.top5 : undefined), 0, 10000, 'los puntos por acierto'));
   config.support = { open: boolean(input.support?.open, 'el termómetro'), ...dates(input.support) };
   config.traffic = { minVotes: Math.round(number(input.traffic?.minVotes, 2, 10000, 'el mínimo de votos')), excellent: number(input.traffic?.excellent, 1, 100, 'el umbral excelente'), good: number(input.traffic?.good, 1, 100, 'el umbral bueno'), regular: number(input.traffic?.regular, 0, 100, 'el umbral regular') };
   if (config.traffic.excellent <= config.traffic.good || config.traffic.good <= config.traffic.regular) fail(400, 'Los umbrales deben ir de mayor a menor.');
   const situations = input.bingo?.situations;
-  if (!Array.isArray(situations) || situations.length < 25 || situations.length > 200) fail(400, 'El bingo necesita entre 25 y 200 situaciones.');
+  if (!Array.isArray(situations) || situations.length < 10 || situations.length > 200) fail(400, 'El bingo necesita entre 10 y 200 ideas para personalizar las casillas.');
   const checked = situations.map(s => ({ id: idOf(s.id), text: clean(s.text, 130, 'la situación del bingo', 3) }));
   if (new Set(checked.map(s => s.id)).size !== checked.length) fail(400, 'Hay situaciones del bingo duplicadas.');
   config.bingo = { open: boolean(input.bingo?.open, 'el bingo'), ...dates(input.bingo), competitive: boolean(input.bingo?.competitive, 'la validación competitiva'), situations: checked };
@@ -78,11 +81,11 @@ export function scoreStatements(db, editionId, points, userId = '') {
         SELECT p.*,r.group_id matched_id,r.position actual_position FROM picks p LEFT JOIN official_results r ON r.edition_id=p.edition_id AND r.category=p.category AND r.group_id=p.group_id AND r.phase=CASE WHEN p.phase='ganador' THEN 'final' ELSE p.phase END
       )
       SELECT f.user_id,f.edition_id,f.phase,
-        COALESCE(SUM(CASE WHEN m.matched_id IS NOT NULL THEN CASE WHEN f.phase='semifinales' THEN ? WHEN f.phase='final' THEN ?+CASE WHEN m.actual_position=m.predicted_position THEN ? ELSE 0 END WHEN f.phase='ganador' AND m.actual_position=1 THEN ? ELSE 0 END ELSE 0 END),0),
+        COALESCE(SUM(CASE WHEN m.matched_id IS NOT NULL THEN CASE WHEN f.phase='semifinales' THEN ? WHEN f.phase='final' THEN ?+CASE WHEN m.actual_position=m.predicted_position THEN ? ELSE 0 END WHEN f.phase='ganador' AND m.actual_position=1 THEN ? WHEN f.phase='top5' THEN ? ELSE 0 END ELSE 0 END),0),
         COALESCE(SUM(CASE WHEN m.matched_id IS NOT NULL AND (f.phase<>'ganador' OR m.actual_position=1) THEN 1 ELSE 0 END),0),
         COALESCE(SUM(CASE WHEN f.phase='final' AND m.matched_id IS NOT NULL AND m.actual_position=m.predicted_position THEN 1 ELSE 0 END),0),?
       FROM phase_forecasts f LEFT JOIN matched m ON m.user_id=f.user_id AND m.edition_id=f.edition_id AND m.phase=f.phase
-      WHERE f.edition_id=? AND (?='' OR f.user_id=?) GROUP BY f.user_id,f.edition_id,f.phase`).bind(editionId, points.semifinales, points.final, points.exactPosition, points.ganador, Date.now(), editionId, userId, userId),
+      WHERE f.edition_id=? AND (?='' OR f.user_id=?) GROUP BY f.user_id,f.edition_id,f.phase`).bind(editionId, points.semifinales, points.final, points.exactPosition, points.ganador, points.top5 ?? 1, Date.now(), editionId, userId, userId),
   ];
 }
 export function badges(points, hits, exactHits, participations) {
@@ -124,18 +127,27 @@ export async function supportSnapshot(db, catalog, category) {
   const values = await rows(db.prepare(`SELECT s.group_id groupId,COUNT(*) votes FROM precontest_support s LEFT JOIN account_moderation m ON m.user_id=s.user_id WHERE s.edition_id=? AND s.category=? AND COALESCE(m.status,'active')<>'suspended' GROUP BY s.group_id ORDER BY votes DESC,s.group_id ASC`).bind(catalog.edition.id, category));
   await db.batch([db.prepare('INSERT INTO support_history(edition_id,category,snapshot,created_at) VALUES(?,?,?,?)').bind(catalog.edition.id, category, JSON.stringify(values), Date.now()),event(db,catalog.edition.id,'support.updated',category,{category,votes:values})]);
 }
-export function bingoLines(marked) {
+export function bingoLines(marked, size = 25) {
   const set = new Set(marked); const lines = [];
+  if (size === 10) {
+    for (let row = 0; row < 2; row++) if (Array.from({ length: 5 }, (_, i) => row * 5 + i).every(i => set.has(i))) lines.push('fila-' + (row + 1));
+    return { lines, bingo: set.size === 10 };
+  }
   for (let i = 0; i < 5; i++) { if (Array.from({ length: 5 }, (_, j) => i * 5 + j).every(v => set.has(v))) lines.push('fila-' + (i + 1)); if (Array.from({ length: 5 }, (_, j) => j * 5 + i).every(v => set.has(v))) lines.push('columna-' + (i + 1)); }
   if ([0, 6, 12, 18, 24].every(v => set.has(v))) lines.push('diagonal-1'); if ([4, 8, 12, 16, 20].every(v => set.has(v))) lines.push('diagonal-2');
   return { lines, bingo: set.size === 25 };
 }
-export function randomCells(situations) {
+export function randomCells(situations, count = 10) {
   const copy = [...situations];
   for (let i = copy.length - 1; i > 0; i--) { const range = i + 1; const maximum = Math.floor(4294967296 / range) * range; let number; do { number = crypto.getRandomValues(new Uint32Array(1))[0]; } while (number >= maximum); const j = number % range; [copy[i], copy[j]] = [copy[j], copy[i]]; }
-  return copy.slice(0, 25);
+  return copy.slice(0, count);
 }
 export function cardForClient(card, confirmedIds) {
-  const cells = JSON.parse(card.cells), stored = JSON.parse(card.marked); const marked = Array.isArray(stored) ? stored : stored.claimed; const validated = Array.isArray(stored) ? [] : stored.validated; const valid = marked.filter(index => validated.includes(index) && confirmedIds.has(cells[index]?.id));
-  return { id: card.id, sessionId: card.session_id, cells, marked, ...bingoLines(marked), verified: { marked: valid, ...bingoLines(valid) }, updatedAt: card.updated_at };
+  const cells = JSON.parse(card.cells), stored = JSON.parse(card.marked); const marked = Array.isArray(stored) ? stored : stored.claimed;
+  const reviews = Array.isArray(stored) ? {} : stored.reviews || {};
+  const validated = Array.isArray(stored) ? [] : stored.validated || [];
+  const personal = cells.length === 10;
+  const valid = marked.filter(index => personal ? reviews[cells[index]?.id]?.status === 'approved' : validated.includes(index) && confirmedIds.has(cells[index]?.id));
+  const editable = !marked.length && !Object.keys(reviews).length && !stored.lockedAt;
+  return { id: card.id, sessionId: card.session_id, cells, marked, editable, reviews, ...bingoLines(marked, cells.length), verified: { marked: valid, ...bingoLines(valid, cells.length) }, updatedAt: card.updated_at };
 }

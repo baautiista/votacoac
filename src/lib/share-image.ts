@@ -19,7 +19,7 @@ export async function shareImage(title: string, subtitle: string, sections: Sect
   context.fillStyle = '#68647D'; context.font = '19px "DM Sans",sans-serif'; context.fillText('COAC 2027 · Participación popular independiente · votaCOAC', margin, height - 45);
   await downloadCanvas(canvas, filename);
 }
-export async function shareBingo(card: { cells: { text: string }[]; marked: number[]; lines?: string[]; bingo?: boolean }, subtitle: string, meta: { edition: string; serial: string } = { edition: 'COAC 2027', serial: '' }) {
+export async function shareBingo(card: { cells: { text: string }[]; marked: number[]; lines?: string[]; bingo?: boolean; verified?: { marked: number[]; bingo: boolean } }, subtitle: string, meta: { edition: string; serial: string } = { edition: 'COAC 2027', serial: '' }) {
   await document.fonts.ready; const W = 1200, H = 1640; const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H; const c = canvas.getContext('2d'); if (!c) throw new Error('No se ha podido generar la imagen.');
   const display = '"Bricolage Grotesque",Outfit,sans-serif', body = '"DM Sans",sans-serif';
   const rounded = (x: number, y: number, w: number, h: number, r: number) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
@@ -36,12 +36,13 @@ export async function shareBingo(card: { cells: { text: string }[]; marked: numb
   const gx = px + 50, gw = pw - 100, gap = 10, size = (gw - gap * 4) / 5, letterColors = ['#3B84FA', '#C92168', '#F2BE26', '#8BD557', '#FF7B2E'];
   'BINGO'.split('').forEach((l, i) => { const x = gx + i * (size + gap); c.fillStyle = letterColors[i]; rounded(x, py + 210, size, 70, 16); c.fill(); c.fillStyle = i === 2 || i === 3 ? '#171344' : '#fff'; c.font = `800 48px ${display}`; c.textAlign = 'center'; c.fillText(l, x + size / 2, py + 262); c.textAlign = 'left'; });
   // casillas
-  const top = py + 300; card.cells.forEach((cell, index) => { const x = gx + index % 5 * (size + gap), y = top + Math.floor(index / 5) * (size + gap); c.fillStyle = '#FFFFFF'; rounded(x, y, size, size, 14); c.fill(); c.strokeStyle = 'rgba(23,19,68,.12)'; c.lineWidth = 2; c.stroke();
+  const columns = card.cells.length === 10 ? 2 : 5, cellWidth = (gw - gap * (columns - 1)) / columns, cellHeight = card.cells.length === 10 ? 178 : size;
+  const top = py + 300; card.cells.forEach((cell, index) => { const x = gx + index % columns * (cellWidth + gap), y = top + Math.floor(index / columns) * (cellHeight + gap); c.fillStyle = '#FFFFFF'; rounded(x, y, cellWidth, cellHeight, 14); c.fill(); c.strokeStyle = 'rgba(23,19,68,.12)'; c.lineWidth = 2; c.stroke();
     c.fillStyle = '#9A96B3'; c.font = `700 16px ${body}`; c.fillText(String(index + 1).padStart(2, '0'), x + 14, y + 26);
-    c.fillStyle = '#171344'; c.font = `600 20px ${body}`; const words = cell.text.split(' '); let line = '', row = 0; for (const word of words) { if (c.measureText(line + word).width > size - 28 && line) { c.fillText(line.trim(), x + 14, y + 60 + row * 26); row++; line = word + ' '; } else line += word + ' '; } c.fillText(line.trim(), x + 14, y + 60 + row * 26);
-    if (card.marked.includes(index)) { c.save(); c.globalAlpha = .78; c.fillStyle = letterColors[index % 5]; c.beginPath(); c.arc(x + size / 2, y + size / 2, size * .34, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1; c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 4; c.beginPath(); c.arc(x + size / 2, y + size / 2, size * .26, 0, Math.PI * 2); c.stroke(); c.restore(); } });
+    c.fillStyle = '#171344'; c.font = `600 20px ${body}`; const words = cell.text.split(' '); let line = '', row = 0; for (const word of words) { if (c.measureText(line + word).width > cellWidth - 28 && line) { c.fillText(line.trim(), x + 14, y + 60 + row * 26); row++; line = word + ' '; } else line += word + ' '; } c.fillText(line.trim(), x + 14, y + 60 + row * 26);
+    if (card.marked.includes(index)) { c.save(); c.globalAlpha = .78; c.fillStyle = letterColors[index % 5]; c.beginPath(); c.arc(x + cellWidth / 2, y + cellHeight / 2, cellHeight * .34, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1; c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 4; c.beginPath(); c.arc(x + cellWidth / 2, y + cellHeight / 2, cellHeight * .26, 0, Math.PI * 2); c.stroke(); c.restore(); } });
   // pie
-  const fy = top + 5 * (size + gap) + 30; c.fillStyle = '#171344'; c.font = `800 34px ${display}`; c.fillText(`${card.marked.length}/25 marcadas · ${card.lines?.length ?? 0} líneas${card.bingo ? ' · ¡BINGO!' : ''}`, gx, fy + 20);
+  const fy = top + Math.ceil(card.cells.length / columns) * (cellHeight + gap) + 30; c.fillStyle = '#171344'; c.font = `800 34px ${display}`; c.fillText(`${card.marked.length}/${card.cells.length} marcadas · ${card.verified?.marked.length ?? 0} validadas${card.verified?.bingo ? ' · ¡BINGO VALIDADO!' : ''}`, gx, fy + 20);
   c.fillStyle = '#5F5B7A'; c.font = `500 20px ${body}`; c.fillText('Juego gratuito, sin apuestas ni premios económicos · votaCOAC', gx, py + ph - 36);
   await downloadCanvas(canvas, 'bingo-del-falla-2027.png');
 }

@@ -2,6 +2,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Lock, Settings, Sparkles } from 'lucide-react';
 import { useApp } from './app-provider';
+import { TopFiveSummary } from './top-five-view';
 import { formatDate } from './competition-ui';
 import { ease, fadeUp, stagger } from './motion';
 import { beforeFeatures, duringFeatures, stageOf, type StageArea, type StageFeature } from '@/lib/stage';
@@ -14,7 +15,7 @@ export function StageSwitch({ area, onChange, className = '' }: { area: StageAre
   const { state } = useApp(); const stage = stageOf(state.competition?.config);
   const options: { id: StageArea; num: string; label: string; note: string; live: boolean }[] = [
     { id: 'antes', num: '01', label: 'Antes del concurso', note: 'Disponible ahora', live: true },
-    { id: 'durante', num: '02', label: 'Durante el concurso', note: stage === 'durante' ? 'En marcha' : 'Próximamente', live: stage === 'durante' },
+    { id: 'durante', num: '02', label: 'Durante el concurso', note: stage === 'durante' ? 'En marcha' : 'Las cinco del público', live: true },
   ];
   return <div className={`stage-switch ${className}`} role="group" aria-label="Etapas del concurso">
     {options.map(o => <button key={o.id} type="button" className={`stage-switch-option ${area === o.id ? 'is-active' : ''}`} data-area={o.id} aria-pressed={area === o.id} onClick={() => onChange(o.id)}>
@@ -32,7 +33,7 @@ function useFeatureStatus() {
     if (!competition) return '';
     switch (feature.id) {
       case 'favoritos': { const chosen = Object.keys(competition.personal.support).length; const closes = competition.config.support.closesAt; return competition.config.support.open ? `${chosen}/${categoryOrder.length} elegidas${closes ? ` · cierra ${formatDate(closes)}` : ''}` : 'Votación de favoritas cerrada'; }
-      case 'quiniela': { const open = forecastPhases.filter(p => competition.windows[p]?.open); const saved = Object.keys(competition.personal.forecasts).length; return open.length ? `Abierta: ${open.map(p => phaseLabels[p]).join(', ')} · ${saved}/${forecastPhases.length} guardadas` : `Sin fases abiertas ahora · ${saved}/${forecastPhases.length} guardadas`; }
+      case 'quiniela': { return competition.personal.forecasts.top5 ? 'Tu quiniela está guardada' : competition.windows.top5?.open ? 'Elige cinco por modalidad' : 'Elección cerrada'; }
       case 'ligas': return competition.personal.handle ? `Juegas como @${competition.personal.handle}` : 'Elige un alias para competir';
       case 'agrupaciones': return `${state.catalog.groups.length} en el cartel`;
       case 'bingo-libre': return 'Entrenamiento · sin puntuación';
@@ -82,6 +83,7 @@ export function StageAreaPanel({ area, onNavigate }: { area: StageArea; onNaviga
       <motion.div className="entry-grid" initial="hidden" animate="show" variants={stagger(0.06, 0.05)}>{before.map((f, i) => <EntryTicket key={f.id} feature={f} index={i} status={status(f)} onNavigate={onNavigate} />)}</motion.div>
     </motion.section>
     : <motion.section key="durante" className={`stage-area area-during ${stage === 'antes' ? 'is-locked' : 'is-live'}`} aria-labelledby="area-during-title" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16, transition: { duration: 0.18 } }} transition={{ duration: 0.45, ease }}>
+      <TopFiveSummary onNavigate={onNavigate} />
       {stage === 'antes' ? <>
         <header className="stage-area-head"><ComingSoonSign /><span className="mini-label">Área 2 · Durante el concurso</span><h2 id="area-during-title">Esto llegará cuando <span className="serif">suba el telón.</span></h2><p>Se activará cuando empiece el concurso. Mientras tanto, prepara tu previa.</p></header>
         <motion.ul className="locked-grid" initial="hidden" animate="show" variants={stagger(0.07, 0.1)}>{during.map((f, i) => <LockedCard key={f.id} feature={f} index={i} />)}</motion.ul>
@@ -100,7 +102,7 @@ export function StageHub({ area, onNavigate }: { area: StageArea; onNavigate: (v
     <section className={`stage-hero hero-${area}`}>
       <span className="proscenium-arch" aria-hidden="true" />
       <span className="curtain curtain-left" aria-hidden="true" /><span className="curtain curtain-right" aria-hidden="true" />
-      <div className="stage-hero-copy"><span className="mini-label">Gran Teatro Falla · COAC 2027</span><h1>{area === 'antes' ? <>La previa</> : <>El concurso</>}</h1><p>{area === 'antes' ? 'Favoritas, quinielas, ligas y entrenamiento: tu temporada empieza antes del primer pase.' : 'Votaciones, rankings, seguimiento y bingo de cada función.'}</p></div>
+      <div className="stage-hero-copy"><span className="mini-label">Gran Teatro Falla · COAC 2027</span><h1>{area === 'antes' ? <>La previa</> : <>El concurso</>}</h1><p>{area === 'antes' ? 'Las cinco del público, ligas y tu bingo personal: empieza antes del primer pase.' : 'Las cinco que llegarán más lejos en cada modalidad. Regístrate para comprobar tus aciertos al terminar.'}</p></div>
     </section>
     <StageSwitch area={area} onChange={next => onNavigate(next === 'antes' ? 'previa' : 'concurso')} className="is-hub" />
     <StageAreaPanel area={area} onNavigate={onNavigate} />

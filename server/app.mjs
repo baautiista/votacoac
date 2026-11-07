@@ -116,7 +116,7 @@ function validateCatalog(input) {
 async function api(request, env) {
   const db = dbOf(env); const url = new URL(request.url); const path = url.pathname; const method = request.method;
   if (method !== 'GET' && method !== 'HEAD') checkWrite(request);
-  if (path.startsWith('/api/competition/') || path.startsWith('/api/integration/v1/') || /^\/api\/admin\/(modules|results|recalculate|bingo-events|moderation|integration-keys|audit|review)$/.test(path)) return handleCompetition(request, env, { db, requireUser, requireAdmin, getUser, throttle, loadCatalog });
+  if (path.startsWith('/api/competition/') || path.startsWith('/api/integration/v1/') || /^\/api\/admin\/(modules|results|recalculate|bingo-events|bingo-cards|moderation|integration-keys|audit|review)$/.test(path)) return handleCompetition(request, env, { db, requireUser, requireAdmin, getUser, throttle, loadCatalog });
   if (path === '/api/health' && method === 'GET') {
     await db.prepare('SELECT key FROM settings LIMIT 1').first();
     return json({ ok: true, storage: 'D1', authentication: 'email-password', schema: 2 });

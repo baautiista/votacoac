@@ -25,10 +25,9 @@ function useMissions(onAlias: () => void) {
   const missions: (Mission & { onAction?: () => void })[] = [];
   if (competition) missions.push({ id: 'alias', icon: AtSign, title: 'Elige tu alias', text: 'Es tu nombre en la Liga y en las clasificaciones.', current: personal?.handle ? 1 : 0, target: 1, action: 'Elegir alias', onAction: onAlias });
   missions.push({ id: 'guardadas', icon: Heart, title: 'Guarda tres agrupaciones', text: 'Tenlas a mano para seguirlas durante el concurso.', current: state.personal.favorites.length, target: 3, view: 'funciones', action: 'Explorar agrupaciones' });
-  if (modules?.support) missions.push({ id: 'favoritas', icon: Star, title: 'Elige tus favoritas', text: 'Una por modalidad en los Favoritos del público.', current: Object.keys(personal?.support || {}).length, target: categoryOrder.length, view: 'termometro', action: 'Elegir favoritas' });
-  if (modules?.predictions) missions.push({ id: 'quiniela', icon: Trophy, title: 'Prepara una quiniela', text: 'Guarda tu pronóstico de cualquier fase dentro de su plazo.', current: Math.min(1, Object.keys(personal?.forecasts || {}).length), target: 1, view: 'pronosticos', action: 'Preparar quiniela' });
+  if (modules?.predictions) missions.push({ id: 'quiniela', icon: Trophy, title: 'Elige tus cinco por modalidad', text: 'Guarda tu quiniela con veinte agrupaciones para comprobar tus aciertos.', current: personal?.forecasts.top5 ? 1 : 0, target: 1, view: 'pronosticos', action: 'Preparar quiniela' });
   if (modules?.league) missions.push({ id: 'liga', icon: Users, title: 'Únete a una liga', text: 'Crea una liga privada o entra con un código de invitación.', current: Math.min(1, leagues.data?.leagues.length || 0), target: 1, view: 'liga', action: 'Ir a ligas' });
-  if (modules?.bingo) missions.push({ id: 'bingo', icon: Grid3x3, title: 'Entrena con el bingo libre', text: 'Saca tu cartón de práctica. No puntúa.', current: bingo.data?.card ? 1 : 0, target: 1, view: 'bingo', action: 'Sacar cartón' });
+  if (modules?.bingo) missions.push({ id: 'bingo', icon: Grid3x3, title: 'Crea tu bingo personal', text: 'Escribe tus diez casillas y guarda el cartón.', current: bingo.data?.card ? 1 : 0, target: 1, view: 'bingo', action: 'Sacar cartón' });
   if (stage === 'durante') missions.push({ id: 'voto', icon: Vote, title: 'Vota una actuación', text: 'Tu voto se suma a la valoración popular.', current: Math.min(1, state.personal.votes.length), target: 1, view: 'funciones', action: 'Votar' });
   return { missions, loading: leagues.loading || bingo.loading };
 }

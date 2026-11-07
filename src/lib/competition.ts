@@ -1,8 +1,8 @@
 import type { GroupCategory, RankingEntry, Group } from './types';
 import type { Prediction } from './api';
-export const forecastPhases = ['semifinales', 'final', 'ganador'] as const;
+export const forecastPhases = ['top5', 'semifinales', 'final', 'ganador'] as const;
 export type ForecastPhase = typeof forecastPhases[number];
-export const phaseLabels: Record<string, string> = { preliminares: 'Preliminares', cuartos: 'Cuartos', semifinales: 'Semifinales', final: 'Gran Final', ganador: 'Ganadores' };
+export const phaseLabels: Record<string, string> = { top5: 'Las cinco del público', preliminares: 'Preliminares', cuartos: 'Cuartos', semifinales: 'Semifinales', final: 'Gran Final', ganador: 'Ganadores' };
 export interface WindowConfig { enabled?: boolean; open?: boolean; opensAt: string | null; closesAt: string | null }
 export type ContestStage = 'antes' | 'durante';
 export interface CompetitionConfig {
@@ -11,7 +11,7 @@ export interface CompetitionConfig {
   version: number;
   modules: Record<'predictions' | 'support' | 'traffic' | 'comparison' | 'evolution' | 'bingo' | 'league' | 'fantasy', boolean>;
   forecasts: Record<ForecastPhase, WindowConfig & { enabled: boolean; limits: Record<GroupCategory, number> }>;
-  points: { semifinales: number; final: number; ganador: number; exactPosition: number };
+  points: { top5: number; semifinales: number; final: number; ganador: number; exactPosition: number };
   support: WindowConfig & { open: boolean };
   traffic: { minVotes: number; excellent: number; good: number; regular: number };
   bingo: WindowConfig & { open: boolean; competitive: boolean; situations: { id: string; text: string }[] };
@@ -39,6 +39,11 @@ export interface GroupInsight {
   history: (Metrics & { performanceId: string; phase: string; at: number })[];
 }
 export interface InsightData { groups: GroupInsight[]; headToHead: { phase: string; a: number; b: number; winner: string | null }[]; officialResults: OfficialResult[]; thresholds: CompetitionConfig['traffic'] }
-export interface BingoCard { id: string; sessionId: string; cells: { id: string; text: string }[]; marked: number[]; lines: string[]; bingo: boolean; verified: { marked: number[]; lines: string[]; bingo: boolean }; updatedAt: number }
+export interface BingoReview { status: 'approved' | 'rejected'; reason: string; reviewedAt: number }
+export interface BingoCard { id: string; sessionId: string; cells: { id: string; text: string }[]; marked: number[]; editable: boolean; reviews: Partial<Record<string, BingoReview>>; lines: string[]; bingo: boolean; verified: { marked: number[]; lines: string[]; bingo: boolean }; updatedAt: number }
 export interface BingoData { readAt: number; sessionId: string; practice: boolean; competitive: boolean; window: { open: boolean; reason: string }; confirmed: string[]; card: BingoCard | null }
+export interface TopFiveData {
+  participants: number; window: { open: boolean; reason: string }; selection: Prediction | null; savedAt: number | null; pointsPerHit: number;
+  categories: Record<GroupCategory, { leaders: { groupId: string; votes: number; percentage: number }[]; results: { groupId: string; position: number; source: string }[]; checked: boolean; hits: number | null }>;
+}
 export const emptyPrediction = (): Prediction => ({ Coro: [], Comparsa: [], Chirigota: [], Cuarteto: [] });
