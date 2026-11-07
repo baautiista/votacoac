@@ -64,7 +64,9 @@ async function throttle(db, request, scope, identity, maximum = 12, interval = 9
 }
 async function loadCatalog(db) {
   const saved = await db.prepare("SELECT value FROM settings WHERE key='catalog'").first();
-  return saved ? JSON.parse(saved.value) : structuredClone(baseCatalog);
+  const catalog = saved ? JSON.parse(saved.value) : structuredClone(baseCatalog);
+  if (catalog.edition.id === baseCatalog.edition.id && catalog.edition.notice?.trim() === 'Participantes transcritos del listado facilitado por el propietario. Calendario y resultados oficiales pendientes.') catalog.edition.notice = '';
+  return catalog;
 }
 const votesForClient = rows => rows.map(row => ({ id: row.id, groupId: row.group_id, groupName: row.group_name, category: row.category, votingType: row.voting_type, performanceId: row.performance_id, score: row.score, ...(row.apto !== null ? { apto: !!row.apto } : {}), createdAt: row.created_at, ...(row.details ? { details: JSON.parse(row.details) } : {}) }));
 async function getState(request, db) {
